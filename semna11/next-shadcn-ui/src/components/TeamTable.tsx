@@ -1,14 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { CalendarIcon, Loader2, Trash2 } from "lucide-react"
 import { format } from "date-fns"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 export function TeamTable({ data, setData }: any) {
   const [loading, setLoading] = useState(false)
@@ -30,7 +32,8 @@ export function TeamTable({ data, setData }: any) {
         ...newMember,
         userId: Math.random().toString(36).substr(2, 9),
         birthdate,
-        isActive: true
+        isActive: true,
+        projectId: newMember.projectId || "Sin asignar"
       }
       setData([...data, member])
       setLoading(false)
@@ -62,17 +65,19 @@ export function TeamTable({ data, setData }: any) {
           <Input value={newMember.position} onChange={e => setNewMember({...newMember, position: e.target.value})} />
         </div>
         <div className="space-y-1">
+          <Label>ID Proyecto</Label>
+          <Input value={newMember.projectId} onChange={e => setNewMember({...newMember, projectId: e.target.value})} placeholder="P-101" />
+        </div>
+        <div className="space-y-1">
           <Label>Teléfono</Label>
           <Input value={newMember.phone} onChange={e => setNewMember({...newMember, phone: e.target.value})} />
         </div>
         <div className="space-y-1 flex flex-col">
           <Label className="mb-1">Cumpleaños</Label>
           <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full justify-start text-left font-normal h-10">
+            <PopoverTrigger className={buttonVariants({ variant: "outline", className: "w-full justify-start text-left font-normal h-10" })}>
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {birthdate ? format(birthdate, "dd/MM/yyyy") : <span>Fecha</span>}
-              </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0"><Calendar mode="single" selected={birthdate} onSelect={setBirthdate} /></PopoverContent>
           </Popover>
@@ -84,21 +89,35 @@ export function TeamTable({ data, setData }: any) {
 
       <div className="border rounded-lg overflow-hidden">
         <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Miembro</TableHead>
+              <TableHead>Email / Tel</TableHead>
+              <TableHead>Proyecto</TableHead>
+              <TableHead>Estado</TableHead>
+              <TableHead className="text-right">Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
           <TableBody>
             {data.map((m: any) => (
-              <tr key={m.userId} className="border-b hover:bg-slate-50 transition-colors">
-                <td className="p-4">
+              <TableRow key={m.userId}>
+                <TableCell>
                   <p className="font-bold text-indigo-900">{m.name}</p>
                   <p className="text-xs text-slate-500">{m.role} • {m.position}</p>
-                </td>
-                <td className="p-4 text-sm">{m.email}</td>
-                <td className="p-4 text-sm">{m.phone}</td>
-                <td className="p-4 text-right">
+                  <p className="text-[10px] text-muted-foreground">Nac: {m.birthdate ? format(m.birthdate, "dd/MM/yyyy") : "N/A"}</p>
+                </TableCell>
+                <TableCell className="text-sm">
+                  <div>{m.email}</div>
+                  <div className="text-xs text-muted-foreground">{m.phone}</div>
+                </TableCell>
+                <TableCell className="text-sm">{m.projectId}</TableCell>
+                <TableCell><Badge variant="outline">{m.isActive ? "Activo" : "Inactivo"}</Badge></TableCell>
+                <TableCell className="text-right">
                   <Button variant="ghost" size="sm" onClick={() => setData(data.filter((x: any) => x.userId !== m.userId))}>
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
           </TableBody>
         </Table>

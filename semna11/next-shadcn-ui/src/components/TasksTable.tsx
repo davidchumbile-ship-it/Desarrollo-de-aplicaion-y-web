@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Calendar } from "@/components/ui/calendar"
@@ -112,11 +112,9 @@ export function TasksTable({ tasks, setTasks }: TasksTableProps) {
           <div className="space-y-2 flex flex-col">
             <Label className="mb-2">Fecha Límite (Dateline)</Label>
             <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" className="justify-start text-left font-normal">
+              <PopoverTrigger className={buttonVariants({ variant: "outline", className: "justify-start text-left font-normal" })}>
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {date ? format(date, "PPP") : <span>Seleccionar fecha</span>}
-                </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
                 <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
